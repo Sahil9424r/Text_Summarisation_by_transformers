@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Text Summarization</title>
+    <style>
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 0;
+            background: linear-gradient(to right, #6a11cb, #2575fc);
+            color: #fff;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        textarea {
+            width: 100%;
+            height: 150px;
+            padding: 15px;
+            margin-top: 10px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 16px;
+            resize: none;
+            box-sizing: border-box;
+        }
+        button {
+            background-color: #2575fc;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            font-size: 16px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+            width: 100%;
+            margin-top: 15px;
+        }
+        button:hover {
+            background-color: #6a11cb;
+        }
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            background-color: #f4f4f9;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+            color: #333;
+        }
+        .result h3 {
+            font-size: 1.5em;
+            margin-bottom: 10px;
+        }
+        .result p {
+            font-size: 1em;
+            line-height: 1.6;
+        }
+        /* Responsive Styling */
+        @media (max-width: 768px) {
+            .container {
+                width: 90%;
+                margin-top: 30px;
+            }
+            button {
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Text Summarizer</h1>
+        <form id="summarizationForm">
+            <label for="inputText">Enter Text:</label>
+            <textarea id="inputText" placeholder="Type or paste your text here..."></textarea>
+            <button type="submit">Summarize</button>
+        </form>
+        <div id="output" class="result" style="display: none;">
+            <h3>Summary:</h3>
+            <p id="summaryText"></p>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById("summarizationForm").addEventListener("submit", async function (e) {
+            e.preventDefault();
+            
+            const inputText = document.getElementById("inputText").value;
+            if (!inputText) {
+                alert("Please enter some text to summarize.");
+                return;
+            }
+
+            // Call the FastAPI endpoint
+            const response = await fetch("http://127.0.0.1:8000/summarize/", {
+                method: "POST",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ text: inputText }),
+            });
+
+            if (response.ok) {
+                const data = await response.json();
+                document.getElementById("summaryText").textContent = data.summary;
+                document.getElementById("output").style.display = "block";
+            } else {
+                alert("An error occurred while summarizing the text.");
+            }
+        });
+    </script>
+</body>
+</html>
